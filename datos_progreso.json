@@ -1,0 +1,34 @@
+{
+  "progreso": {
+    "A": {
+      "estrellas": 0,
+      "estado": "Pendiente",
+      "intentos": 0
+    },
+    "E": {
+      "estrellas": 0,
+      "estado": "Pendiente",
+      "intentos": 0
+    },
+    "I": {
+      "estrellas": 0,
+      "estado": "Pendiente",
+      "intentos": 0
+    },
+    "O": {
+      "estrellas": 0,
+      "estado": "Pendiente",
+      "intentos": 0
+    },
+    "U": {
+      "estrellas": 0,
+      "estado": "Pendiente",
+      "intentos": 0
+    }
+  },
+  "perfil_activo": {
+    "nombre": "Yara Tercero",
+    "grado": "Primero B",
+    "numero_lista": 1
+  }
+}
