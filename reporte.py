@@ -13,6 +13,13 @@ class PantallaReporte(BoxLayout):
     self.padding = 20
     self.spacing = 10
     self.al_volver_callback = al_volver_callback
+    self.construir_reporte()
+
+  def on_pre_enter(self, *args):
+    self.construir_reporte()
+
+  def construir_reporte(self):
+    self.clear_widgets()
 
     datos = cargar_datos() or {}
     perfil = datos.get(
@@ -20,7 +27,6 @@ class PantallaReporte(BoxLayout):
         {'nombre': 'Sin registro', 'grado': '-', 'numero_lista': 0},
     )
 
-    # Encabezado con datos del alumno
     self.add_widget(
         Label(
             text='Reporte de Progreso', font_size='22sp', bold=True
@@ -36,15 +42,14 @@ class PantallaReporte(BoxLayout):
         )
     )
 
-    # Grid con el estado de las vocales
     grid = GridLayout(cols=1, spacing=5, size_hint_y=0.6)
     progreso = datos.get('progreso', {})
 
     for vocal, info in progreso.items():
-      estrellas = '⭐' * info['estrellas'] if info['estrellas'] > 0 else '☆☆☆'
+      estrellas = '⭐' * int(info.get('estrellas', 0)) if info.get('estrellas', 0) > 0 else '☆☆☆'
       texto = (
-          f"Vocal [{vocal}]: {estrellas} | Estado: {info['estado']} | Intentos:"
-          f" {info['intentos']}"
+          f"Vocal [{vocal}]: {estrellas} | Estado: {info.get('estado', 'Pendiente')} | Intentos:"
+          f" {info.get('intentos', 0)}"
       )
       grid.add_widget(Label(text=texto, font_size='14sp'))
 

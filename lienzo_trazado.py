@@ -11,6 +11,7 @@ class RielesLienzo(Widget):
   def __init__(self, **kwargs):
     super().__init__(**kwargs)
     self.bind(size=self.dibujar_rieles, pos=self.dibujar_rieles)
+    self.puntos_trazo = []
 
   def dibujar_rieles(self, *args):
     self.canvas.before.clear()
@@ -36,10 +37,43 @@ class RielesLienzo(Widget):
       with self.canvas:
         Color(0.1, 0.1, 0.1, 1)  # Color del trazo (Negro)
         touch.ud['linea'] = Line(points=(touch.x, touch.y), width=6)
+      self.puntos_trazo = [(touch.x, touch.y)]
+      return True
 
   def on_touch_move(self, touch):
     if 'linea' in touch.ud and self.collide_point(*touch.pos):
       touch.ud['linea'].points += [touch.x, touch.y]
+      self.puntos_trazo.append((touch.x, touch.y))
+      return True
+
+  def on_touch_up(self, touch):
+    if 'linea' in touch.ud:
+      self.puntos_trazo.append((touch.x, touch.y))
+      return True
+
+  def evaluar_trazo(self):
+    """Evalúa si el trazo es un intento válido para la vocal."""
+    puntos = self.puntos_trazo
+    if len(puntos) < 8:
+      return 0
+
+    xs = [p[0] for p in puntos]
+    ys = [p[1] for p in puntos]
+    ancho = max(xs) - min(xs)
+    alto = max(ys) - min(ys)
+    distancia = 0
+    for i in range(1, len(puntos)):
+      x1, y1 = puntos[i - 1]
+      x2, y2 = puntos[i]
+      distancia += ((x2 - x1) ** 2 + (y2 - y1) ** 2) ** 0.5
+
+    if len(puntos) >= 25 and ancho > 50 and alto > 30 and distancia > 120:
+      return 3
+    if len(puntos) >= 12 and ancho > 20 and alto > 15 and distancia > 40:
+      return 2
+    if len(puntos) >= 8 and ancho > 10 and alto > 10:
+      return 1
+    return 0
 
 
 class PantallaLienzo(BoxLayout):
@@ -82,8 +116,10 @@ class PantallaLienzo(BoxLayout):
 
   def limpiar(self, instance):
     self.lienzo.canvas.clear()
+    self.lienzo.puntos_trazo = []
     self.lienzo.dibujar_rieles()
 
   def guardar_y_volver(self, instance):
-    actualizar_progreso(self.vocal, estrellas=3)
+    estrellas = self.lienzo.evaluar_trazo()
+    actualizar_progreso(self.vocal, estrellas=estrellas)
     self.al_volver_callback()
